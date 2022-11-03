@@ -3,7 +3,9 @@ import Input2 from "../../components/Input2";
 import Button from "../../components/Button";
 import * as C from "./styles";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+
+
+
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -11,10 +13,12 @@ const Signup = () => {
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const validEmail = new RegExp(
+    "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
+  );
 
-  const { signup } = useAuth();
-
-  const handleSignup = () => {
+  const [inputEmailErr, setInputEmailErr] = useState(false);
+  const validate = () => {
     if (!email | !emailConf | !senha) {
       setError("Preencha todos os campos");
       return;
@@ -22,34 +26,40 @@ const Signup = () => {
       setError("Os e-mails não são iguais");
       return;
     }
-
-    const res = signup(email, senha);
-
-    if (res) {
-      setError(res);
+    if (!validEmail.test(email)) {
+      setInputEmailErr("Por favor digite um email válido!");
       return;
-    }
 
+    } else {
+      setInputEmailErr(false);
+   
+    }
     alert("Usuário cadatrado com sucesso!");
     navigate("/");
+
   };
+
+
 
   return (
     <C.Container>
-      <C.Label>SISTEMA DE LOGIN</C.Label>
+      
       <C.Content>
+      <C.Label>Registre-se!</C.Label>
         <Input2
           type="email"
           placeholder="Digite seu E-mail"
           value={email}
-          onChange={(e) => [setEmail(e.target.value), setError("")]}
+          onChange={(e) => [setEmail(e.target.value), setError(""), setInputEmailErr("")]}
         />
+        
         <Input2
           type="email"
           placeholder="Confirme seu E-mail"
           value={emailConf}
-          onChange={(e) => [setEmailConf(e.target.value), setError("")]}
+          onChange={(e) => [setEmailConf(e.target.value), setError(""), setInputEmailErr("")]}
         />
+        
         <Input2
           type="text"
           placeholder="Digite seu Nome"
@@ -57,7 +67,8 @@ const Signup = () => {
           onChange={(e) => [setSenha(e.target.value), setError("")]}
         />
         <C.labelError>{error}</C.labelError>
-        <Button Text="Inscrever-se" onClick={handleSignup} />
+        <C.labelError>{inputEmailErr}</C.labelError>
+        <Button Text="Inscrever-se" onClick={validate} />
         <C.LabelSignin>
           Já tem uma conta?
           <C.Strong>
@@ -70,3 +81,4 @@ const Signup = () => {
 };
 
 export default Signup;
+
